@@ -122,6 +122,7 @@ module.exports = [
   "woff",
   "woff2",
   "www",
+  "zipcode",
 
   // dates
   "yyyymmdd"

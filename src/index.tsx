@@ -13,7 +13,7 @@ import SkillsSectionContainer from "./components/skills/SkillsSectionContainer";
 function App(): JSX.Element {
   // required when hosting the app on a sub-directory of a domain rather than top-level
   const projectPath =
-    process.env.NODE_ENV === "production" ? "/webpack-react-template/" : "/";
+    process.env.NODE_ENV === "production" ? "/votes-by-city/" : "/";
 
   return (
     <Router basename={projectPath}>
