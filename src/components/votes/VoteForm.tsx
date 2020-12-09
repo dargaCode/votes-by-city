@@ -132,14 +132,6 @@ export default class VoteForm extends React.Component<Props, State> {
     const { onSubmit } = this.props;
     const { inputGroups } = this.state;
 
-    /* build a map:
-     * zipCodes: {
-     *   94063: 100,
-     *   94061: 200
-     * }
-     *
-     * */
-
     onSubmit(inputGroups);
   };
 
