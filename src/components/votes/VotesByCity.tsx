@@ -1,5 +1,7 @@
 import React from "react";
 import styles from "./VotesByCity.module.scss";
+import VoteForm from "./VoteForm";
+import { VoteBundle } from "./voteUtils";
 
 export default class VotesByCity extends React.Component<{}, {}> {
   constructor(props: any) {
@@ -8,8 +10,8 @@ export default class VotesByCity extends React.Component<{}, {}> {
     this.state = {};
   }
 
-  handleFormSubmit = (formValues: { [name: string]: string }): void => {
-    console.log(formValues);
+  handleFormSubmit = (voteBundles: VoteBundle[]): void => {
+    console.log(voteBundles);
 
     // look up the id from the api, then process
 
@@ -19,9 +21,11 @@ export default class VotesByCity extends React.Component<{}, {}> {
 
   render(): JSX.Element {
     return (
-      <div>
-        Add the votes!
-        {/* render form */}
+      <div className={styles.container}>
+        <h1>Votes by City</h1>
+
+        <VoteForm onSubmit={this.handleFormSubmit} />
+
         {/* render this.state.cities summary */}
       </div>
     );
