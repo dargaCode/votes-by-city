@@ -9,6 +9,17 @@ interface State {
   inputGroups: VoteBundle[];
 }
 
+const INDEX_ATTRIBUTE = "bundle-index";
+
+// generate a spreadable react attribute for index attribute, to prevent typos
+function getBundleIndexProp(
+  index: number
+): { [INDEX_ATTRIBUTE: string]: number } {
+  return {
+    [INDEX_ATTRIBUTE]: index
+  };
+}
+
 export default class VoteForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -34,10 +45,13 @@ export default class VoteForm extends React.Component<Props, State> {
               // it will be easier to key into name since it has no appended index
               name="zipCode"
               type="text"
+              maxLength={5}
               value={bundle.zipCode}
+              required
               onChange={this.handleChange}
               // custom attributes
-              bundle-index={i}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...getBundleIndexProp(i)}
             />
           </label>
 
@@ -48,12 +62,27 @@ export default class VoteForm extends React.Component<Props, State> {
               // it will be easier to key into name since it has no appended index
               name="addedVotes"
               type="number"
+              min="0"
               value={bundle.addedVotes || ""}
+              required
               onChange={this.handleChange}
               // custom attributes
-              bundle-index={i}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...getBundleIndexProp(i)}
             />
           </label>
+
+          {/* don't allow the first row to be removed */}
+          {i > 0 && (
+            <button
+              type="button"
+              onClick={this.removeInputGroup}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...getBundleIndexProp(i)}
+            >
+              x
+            </button>
+          )}
         </div>
       );
     });
@@ -69,11 +98,24 @@ export default class VoteForm extends React.Component<Props, State> {
     });
   };
 
+  removeInputGroup = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    const { currentTarget: target } = event;
+    const index = Number(target.getAttribute(INDEX_ATTRIBUTE));
+
+    this.setState(prevState => {
+      const newState = { ...prevState };
+
+      newState.inputGroups.splice(index, 1);
+
+      return newState;
+    });
+  };
+
   handleChange = (event: React.FormEvent<HTMLInputElement>): void => {
     const { currentTarget: target } = event;
     // name doesn't have an index appended like id does, so it's easier to parse
     const { name, value } = target;
-    const index = Number(target.getAttribute("bundle-index"));
+    const index = Number(target.getAttribute(INDEX_ATTRIBUTE));
 
     this.setState(prevState => {
       const newState = { ...prevState };

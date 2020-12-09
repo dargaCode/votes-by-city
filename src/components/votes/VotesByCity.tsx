@@ -4,7 +4,7 @@ import VoteForm from "./VoteForm";
 import { VoteBundle } from "./voteUtils";
 
 export default class VotesByCity extends React.Component<{}, {}> {
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
 
     this.state = {};
