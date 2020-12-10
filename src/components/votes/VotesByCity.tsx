@@ -2,6 +2,7 @@ import React from "react";
 import { ZipCodeVotes, VoteBundle } from "./voteUtils";
 import styles from "./VotesByCity.module.scss";
 import VoteForm from "./VoteForm";
+import ClearDataButton from "./ClearDataButton";
 
 interface State {
   zipCodeVotes: ZipCodeVotes;
@@ -30,6 +31,12 @@ export default class VotesByCity extends React.Component<{}, State> {
 
   saveStateToLocalStorage = (): void => {
     localStorage.setItem("state", JSON.stringify(this.state));
+  };
+
+  clearAllData = (): void => {
+    localStorage.clear();
+
+    this.setState(INITIAL_STATE);
   };
 
   getZipCodeVotes = (voteBundles: VoteBundle[]): ZipCodeVotes => {
@@ -72,6 +79,8 @@ export default class VotesByCity extends React.Component<{}, State> {
         <VoteForm onSubmit={this.handleFormSubmit} />
 
         {/* render this.state.cities summary */}
+
+        <ClearDataButton onClearData={this.clearAllData} />
       </div>
     );
   }
