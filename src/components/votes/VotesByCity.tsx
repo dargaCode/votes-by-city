@@ -1,15 +1,15 @@
 import React from "react";
-import { ZipCodeVotes, VoteBundle } from "./voteUtils";
+import { VoteBundle, ZipCodeVotesSimple } from "./voteUtils";
 import styles from "./VotesByCity.module.scss";
 import VoteForm from "./VoteForm";
 import ClearDataButton from "./ClearDataButton";
 
 interface State {
-  zipCodeVotes: ZipCodeVotes;
+  zipCodeVotes: ZipCodeVotesSimple;
 }
 
 const INITIAL_STATE: State = {
-  zipCodeVotes: {},
+  zipCodeVotes: {}
 };
 
 export default class VotesByCity extends React.Component<{}, State> {
@@ -39,31 +39,32 @@ export default class VotesByCity extends React.Component<{}, State> {
     this.setState(INITIAL_STATE);
   };
 
-  getZipCodeVotes = (voteBundles: VoteBundle[]): ZipCodeVotes => {
-    // eslint-disable-next-line react/destructuring-assignment
-    const zipCodeVotes = { ...this.state.zipCodeVotes };
+  // aggregate vote bundles into a dictionary by zipCode
+  generateSimpleZipCodes = (voteBundles: VoteBundle[]): ZipCodeVotesSimple => {
+    const zipCodeVotes: ZipCodeVotesSimple = {};
 
     voteBundles.forEach(bundle => {
       const { zipCode, addedVotes } = bundle;
       const voteCount = Number(addedVotes);
 
-      if (!zipCodeVotes[zipCode]) {
-        zipCodeVotes[zipCode] = { votes: voteCount };
-      } else {
+      if (zipCodeVotes[zipCode]) {
         zipCodeVotes[zipCode].votes += voteCount;
+      } else {
+        zipCodeVotes[zipCode] = { votes: voteCount };
       }
     });
 
     return zipCodeVotes;
   };
 
-  handleFormSubmit = (voteBundles: VoteBundle[]): void => {
-    const zipCodeVotes = this.getZipCodeVotes(voteBundles);
-
-    console.log(zipCodeVotes);
+  handleFormSubmit = (newVoteBundles: VoteBundle[]): void => {
+    const newZipCodeVotes = this.generateSimpleZipCodes(newVoteBundles);
 
     this.setState(prevState => {
-      return { ...prevState, zipCodeVotes };
+      return {
+        ...prevState,
+        zipCodeVotes: newZipCodeVotes
+      };
     }, this.saveStateToLocalStorage);
 
     // look up the id from the api, then process
