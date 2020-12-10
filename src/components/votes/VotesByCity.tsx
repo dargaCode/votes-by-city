@@ -18,6 +18,20 @@ export default class VotesByCity extends React.Component<{}, State> {
     this.state = INITIAL_STATE;
   }
 
+  componentDidMount(): void {
+    this.loadStateFromLocalStorage();
+  }
+
+  loadStateFromLocalStorage = (): void => {
+    const savedState = localStorage.getItem("state");
+
+    this.setState(JSON.parse(savedState as string));
+  };
+
+  saveStateToLocalStorage = (): void => {
+    localStorage.setItem("state", JSON.stringify(this.state));
+  };
+
   getZipCodeVotes = (voteBundles: VoteBundle[]): ZipCodeVotes => {
     // eslint-disable-next-line react/destructuring-assignment
     const zipCodeVotes = { ...this.state.zipCodeVotes };
@@ -43,7 +57,7 @@ export default class VotesByCity extends React.Component<{}, State> {
 
     this.setState(prevState => {
       return { ...prevState, zipCodeVotes };
-    });
+    }, this.saveStateToLocalStorage);
 
     // look up the id from the api, then process
     // update city counts
