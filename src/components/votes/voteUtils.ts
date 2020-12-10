@@ -20,3 +20,28 @@ export interface ZipCodeVotesSimple {
     votes: number;
   };
 }
+
+export interface ZipCodeVotesProcessed extends ZipCodeVotesSimple {
+  [zipCode: string]: {
+    votes: number;
+    city: string;
+    state: string;
+  };
+}
+
+interface ApiPlace {
+  "place name": string;
+  city: string;
+  state: string;
+}
+
+export interface ParsedApiJson {
+  "post code": string;
+  places: ApiPlace[];
+}
+
+export interface LocationData {
+  zipCode: string;
+  city: string;
+  state: string;
+}

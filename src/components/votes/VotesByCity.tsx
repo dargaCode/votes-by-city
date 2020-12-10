@@ -1,16 +1,66 @@
 import React from "react";
-import { VoteBundle, ZipCodeVotesSimple } from "./voteUtils";
+import {
+  VoteBundle,
+  ZipCodeVotesSimple,
+  ZipCodeVotesProcessed,
+  ParsedApiJson,
+  LocationData
+} from "./voteUtils";
 import styles from "./VotesByCity.module.scss";
 import VoteForm from "./VoteForm";
 import ClearDataButton from "./ClearDataButton";
 
 interface State {
-  zipCodeVotes: ZipCodeVotesSimple;
+  zipCodeVotes: ZipCodeVotesProcessed;
 }
 
 const INITIAL_STATE: State = {
   zipCodeVotes: {}
 };
+const ZIPCODE_API_PREFIX = `https://api.zippopotam.us/us/`;
+
+// true if zipCode is already present and has a valid location
+function isZipCodeFullyProcessed(
+  zipCode: string,
+  cache: ZipCodeVotesProcessed
+): boolean {
+  const cachedZipCode = cache[zipCode];
+
+  if (!cachedZipCode) {
+    return false;
+  }
+
+  const cityIsCached = cachedZipCode.city !== "";
+  const stateIsCached = cachedZipCode.state !== "";
+
+  return cityIsCached && stateIsCached;
+}
+
+// return a simple object with the zipCode, city, and state
+function getLocationFromParsedApiJson(obj: ParsedApiJson): LocationData {
+  const { "post code": zipCode, places } = obj;
+  const { "place name": city, state } = places[0];
+
+  return {
+    zipCode,
+    city,
+    state
+  };
+}
+
+// replace the cache's incomplete location data (by reference)
+function cacheLocationData(
+  cacheRef: ZipCodeVotesProcessed,
+  locations: LocationData[]
+): void {
+  locations.forEach(location => {
+    const { zipCode, city, state } = location;
+    const cachedZipRef = cacheRef[zipCode];
+
+    cachedZipRef.city = city;
+    cachedZipRef.state = state;
+  });
+}
 
 export default class VotesByCity extends React.Component<{}, State> {
   constructor(props: {}) {
@@ -57,19 +107,64 @@ export default class VotesByCity extends React.Component<{}, State> {
     return zipCodeVotes;
   };
 
-  handleFormSubmit = (newVoteBundles: VoteBundle[]): void => {
+  // get locations for the new votes, and aggregate into the dict from state
+  processAllLocations = async (
+    zipCodeVotes: ZipCodeVotesSimple
+  ): Promise<ZipCodeVotesProcessed> => {
+    // eslint-disable-next-line react/destructuring-assignment
+    const processedZipCodes = { ...this.state.zipCodeVotes };
+    const zipCodeEntries = Object.entries(zipCodeVotes);
+    const locationRequests: Promise<Response>[] = [];
+
+    zipCodeEntries.forEach(([zipCode, { votes }]) => {
+      const isCached = isZipCodeFullyProcessed(zipCode, processedZipCodes);
+
+      // no location request needed, just increment the vote total
+      if (isCached) {
+        processedZipCodes[zipCode].votes += votes;
+      } else {
+        // process and cache new zipCode
+        locationRequests.push(fetch(ZIPCODE_API_PREFIX + zipCode));
+
+        // placeholder location until the data is fetched
+        processedZipCodes[zipCode] = { votes, city: "", state: "" };
+      }
+    });
+
+    // all new votes were for zipCodes which had already been processed
+    // no need for api calls
+    if (!locationRequests.length) {
+      return processedZipCodes;
+    }
+
+    try {
+      const responses = await Promise.all(locationRequests);
+      const jsonPromises = responses.map(response => response.json());
+      const jsons = await Promise.all(jsonPromises);
+      const locations = jsons.map(getLocationFromParsedApiJson);
+
+      // complete the location data, now that it's fetched
+      cacheLocationData(processedZipCodes, locations);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Error:", e.message);
+    }
+
+    return processedZipCodes;
+  };
+
+  handleFormSubmit = async (newVoteBundles: VoteBundle[]): Promise<void> => {
     const newZipCodeVotes = this.generateSimpleZipCodes(newVoteBundles);
+    const allProcessedZipCodeVotes = await this.processAllLocations(
+      newZipCodeVotes
+    );
 
     this.setState(prevState => {
       return {
         ...prevState,
-        zipCodeVotes: newZipCodeVotes
+        zipCodeVotes: allProcessedZipCodeVotes
       };
     }, this.saveStateToLocalStorage);
-
-    // look up the id from the api, then process
-    // update city counts
-    // update state
   };
 
   render(): JSX.Element {
