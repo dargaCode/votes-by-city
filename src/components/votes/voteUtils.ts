@@ -45,3 +45,55 @@ export interface LocationData {
   city: string;
   state: string;
 }
+
+interface CityVotes {
+  [cityId: string]: {
+    city: string;
+    state: string;
+    votes: number;
+  };
+}
+
+// aggregate processed locations into a dict of votes by location
+export function getCityVotes(
+  processedZipCodes: ZipCodeVotesProcessed
+): CityVotes {
+  const cityVotes: CityVotes = {};
+  const zipCodeEntries = Object.entries(processedZipCodes);
+
+  zipCodeEntries.forEach(zipCodeEntry => {
+    // don't need to use the zipCode key from the entry
+    const { votes, city, state } = zipCodeEntry[1];
+    const cityKey = `${city},${state}`;
+
+    if (cityVotes[cityKey]) {
+      cityVotes[cityKey].votes += votes;
+    } else {
+      cityVotes[cityKey] = {
+        votes,
+        city,
+        state
+      };
+    }
+  });
+
+  return cityVotes;
+}
+
+export interface CityRow {
+  city: string;
+  state: string;
+  votes: number;
+}
+
+function DescendingVotesComparator(a: CityRow, b: CityRow): number {
+  return b.votes - a.votes;
+}
+
+// get an array of city stat objects
+export function getDescendingCityRows(cityVotes: CityVotes): CityRow[] {
+  const cityEntries = Object.entries(cityVotes);
+  const cityRows = cityEntries.map(cityEntry => cityEntry[1]);
+
+  return cityRows.sort(DescendingVotesComparator);
+}

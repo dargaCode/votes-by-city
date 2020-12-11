@@ -4,7 +4,10 @@ import {
   ZipCodeVotesSimple,
   ZipCodeVotesProcessed,
   ParsedApiJson,
-  LocationData
+  LocationData,
+  CityRow,
+  getCityVotes,
+  getDescendingCityRows
 } from "./voteUtils";
 import styles from "./VotesByCity.module.scss";
 import VoteForm from "./VoteForm";
@@ -12,10 +15,12 @@ import ClearDataButton from "./ClearDataButton";
 
 interface State {
   zipCodeVotes: ZipCodeVotesProcessed;
+  cityRows: CityRow[];
 }
 
 const INITIAL_STATE: State = {
-  zipCodeVotes: {}
+  zipCodeVotes: {},
+  cityRows: []
 };
 const ZIPCODE_API_PREFIX = `https://api.zippopotam.us/us/`;
 
@@ -155,14 +160,15 @@ export default class VotesByCity extends React.Component<{}, State> {
 
   handleFormSubmit = async (newVoteBundles: VoteBundle[]): Promise<void> => {
     const newZipCodeVotes = this.generateSimpleZipCodes(newVoteBundles);
-    const allProcessedZipCodeVotes = await this.processAllLocations(
-      newZipCodeVotes
-    );
+    const processedZipCodes = await this.processAllLocations(newZipCodeVotes);
+    const cityVotes = getCityVotes(processedZipCodes);
+    const cityRows = getDescendingCityRows(cityVotes);
 
     this.setState(prevState => {
       return {
         ...prevState,
-        zipCodeVotes: allProcessedZipCodeVotes
+        zipCodeVotes: processedZipCodes,
+        cityRows
       };
     }, this.saveStateToLocalStorage);
   };
