@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import VotesByCity from "./components/votes/VotesByCity";
+import VotesByCity from "./components/VotesByCity";
 import "./config/_general.scss";
 
 function App(): JSX.Element {

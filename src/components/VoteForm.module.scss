@@ -1,5 +1,5 @@
-@use '../../config';
-@use '../../utils/break';
+@use '../config/index';
+@use '../utils/break';
 
 .form-wrapper {
   border: 2px solid black;
