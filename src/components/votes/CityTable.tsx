@@ -1,18 +1,27 @@
 import React from "react";
 import { CityRow } from "./voteUtils";
+import styles from "./CityTable.module.scss";
 
 interface Props {
   rows: CityRow[];
 }
 
 const HEADER_ROW = (
-  <thead>
+  <thead className={styles.header}>
     <tr>
       <td>City</td>
       <td>State</td>
       <td>Count</td>
     </tr>
   </thead>
+);
+
+const BLANK_ROW = (
+  <tr key="1">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
 );
 
 export default function CityTable(props: Props): JSX.Element {
@@ -31,10 +40,10 @@ export default function CityTable(props: Props): JSX.Element {
   });
 
   return (
-    <div>
+    <div className={styles.tableWrapper}>
       <table>
         {HEADER_ROW}
-        <tbody>{tableRows}</tbody>
+        <tbody>{tableRows.length ? tableRows : BLANK_ROW}</tbody>
       </table>
     </div>
   );

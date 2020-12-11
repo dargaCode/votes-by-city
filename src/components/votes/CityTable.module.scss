@@ -1,0 +1,38 @@
+@use '../../config';
+@use '../../utils/break';
+
+.table-wrapper {
+  padding: 30px;
+  text-align: left;
+
+  table {
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+
+  td,
+  th {
+    border: 1px solid #999;
+    padding: 3px 8px;
+  }
+
+  tr {
+    background: #eee;
+  }
+
+  tr:nth-child(even) {
+    background: #bbb;
+  }
+
+  td {
+    min-width: 200px;
+  }
+}
+
+.header {
+  tr {
+    background: #999;
+    color: white;
+    font-weight: bold;
+  }
+}

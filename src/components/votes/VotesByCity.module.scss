@@ -2,4 +2,10 @@
 @use '../../utils/break';
 
 .container {
+  padding: 30px;
+  text-align: center;
+
+  h1 {
+    margin: 20px;
+  }
 }

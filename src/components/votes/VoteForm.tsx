@@ -1,5 +1,6 @@
 import React from "react";
 import { VoteBundle, DEFAULT_VOTE_BUNDLE } from "./voteUtils";
+import styles from "./VoteForm.module.scss";
 
 interface Props {
   onSubmit: (voteBundles: VoteBundle[]) => void;
@@ -37,7 +38,7 @@ export default class VoteForm extends React.Component<Props, State> {
 
       return (
         // eslint-disable-next-line react/no-array-index-key
-        <div key={key}>
+        <div key={key} className={styles.inputRow}>
           <label htmlFor={zipCodeId}>
             ZipCode:
             <input
@@ -45,6 +46,7 @@ export default class VoteForm extends React.Component<Props, State> {
               // it will be easier to key into name since it has no appended index
               name="zipCode"
               type="text"
+              className={styles.zipCodeInput}
               maxLength={5}
               value={bundle.zipCode}
               required
@@ -56,12 +58,13 @@ export default class VoteForm extends React.Component<Props, State> {
           </label>
 
           <label htmlFor={addedVotesId}>
-            Votes to Add:
+            Count:
             <input
               id={addedVotesId}
               // it will be easier to key into name since it has no appended index
               name="addedVotes"
               type="number"
+              className={styles.votesInput}
               min="0"
               value={bundle.addedVotes || ""}
               required
@@ -76,6 +79,7 @@ export default class VoteForm extends React.Component<Props, State> {
           {i > 0 && (
             <button
               type="button"
+              className={styles.deleteRowButton}
               onClick={this.removeInputGroup}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...getBundleIndexProp(i)}
@@ -139,14 +143,20 @@ export default class VoteForm extends React.Component<Props, State> {
     const { inputGroups } = this.state;
 
     return (
-      <div>
-        <button type="button" onClick={this.addInputGroup}>
+      <div className={styles.formWrapper}>
+        <button
+          type="button"
+          className={styles.addRowButton}
+          onClick={this.addInputGroup}
+        >
           Add Row
         </button>
         <form onSubmit={this.handleSubmit}>
           {this.getInputGroups(inputGroups)}
 
-          <input type="submit" />
+          <div className={styles.formFooter}>
+            <input type="submit" className={styles.submitButton} />
+          </div>
         </form>
       </div>
     );

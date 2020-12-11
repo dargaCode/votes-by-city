@@ -1,0 +1,60 @@
+@use '../../config';
+@use '../../utils/break';
+
+.form-wrapper {
+  border: 2px solid black;
+  margin: 0 auto;
+  max-width: 370px;
+  padding: 20px 40px;
+  text-align: left;
+
+  form {
+    max-width: 288px;
+  }
+
+  button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.add-row-button {
+  margin-bottom: 5px;
+}
+
+.input-row {
+  margin: 5px 0;
+
+  label {
+    font-size: 14px;
+  }
+
+  .zip-code-input {
+    margin: 0 20px 0 5px;
+    max-width: 50px;
+  }
+
+  .votes-input {
+    margin: 0 10px 0 5px;
+    max-width: 75px;
+  }
+
+  .delete-row-button {
+    color: red;
+    &:hover {
+      background: red;
+      color: white;
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  flex-direction: row;
+
+  .submit-button {
+    margin-left: auto;
+    margin-top: 10px;
+  }
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./ClearDataButton.module.scss";
 
 const CONFIRM_MESSAGE =
   "Are you sure you want to permanently delete all saved data?";
@@ -26,7 +27,11 @@ export default function ClearDataButton(props: Props): JSX.Element {
   };
 
   return (
-    <button type="button" onClick={handleClick}>
+    <button
+      type="button"
+      className={styles.clearDataButton}
+      onClick={handleClick}
+    >
       {WARNING_EMOJI}️ Clear all Data {WARNING_EMOJI}
     </button>
   );

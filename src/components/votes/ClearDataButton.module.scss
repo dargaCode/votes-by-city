@@ -1,0 +1,11 @@
+@use '../../config';
+@use '../../utils/break';
+
+.clear-data-button {
+  color: red;
+
+  &:hover {
+    background: darkred;
+    color: white;
+  }
+}
