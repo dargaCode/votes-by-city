@@ -12,6 +12,7 @@ import {
 import styles from "./VotesByCity.module.scss";
 import VoteForm from "./VoteForm";
 import ClearDataButton from "./ClearDataButton";
+import CityTable from "./CityTable";
 
 interface State {
   zipCodeVotes: ZipCodeVotesProcessed;
@@ -174,14 +175,13 @@ export default class VotesByCity extends React.Component<{}, State> {
   };
 
   render(): JSX.Element {
+    const { cityRows } = this.state;
+
     return (
       <div className={styles.container}>
         <h1>Votes by City</h1>
-
         <VoteForm onSubmit={this.handleFormSubmit} />
-
-        {/* render this.state.cities summary */}
-
+        <CityTable rows={cityRows} />
         <ClearDataButton onClearData={this.clearAllData} />
       </div>
     );
