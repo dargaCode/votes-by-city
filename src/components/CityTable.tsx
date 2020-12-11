@@ -6,6 +6,7 @@ interface Props {
   rows: CityRow[];
 }
 
+const DEFAULT_CITY_LIMIT = 5;
 const HEADER_ROW = (
   <thead className={styles.header}>
     <tr>
@@ -38,12 +39,13 @@ export default function CityTable(props: Props): JSX.Element {
       </tr>
     );
   });
+  const cappedRows = tableRows.slice(0, DEFAULT_CITY_LIMIT);
 
   return (
     <div className={styles.tableWrapper}>
       <table>
         {HEADER_ROW}
-        <tbody>{tableRows.length ? tableRows : BLANK_ROW}</tbody>
+        <tbody>{cappedRows.length ? cappedRows : BLANK_ROW}</tbody>
       </table>
     </div>
   );

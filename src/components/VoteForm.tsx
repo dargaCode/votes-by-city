@@ -115,6 +115,15 @@ export default class VoteForm extends React.Component<Props, State> {
     });
   };
 
+  getEmptyInputGroups = (): VoteBundle[] => {
+    // eslint-disable-next-line react/destructuring-assignment
+    const inputGroups = Array.from(this.state.inputGroups);
+
+    return inputGroups.map(() => {
+      return { ...DEFAULT_VOTE_BUNDLE };
+    });
+  };
+
   handleChange = (event: React.FormEvent<HTMLInputElement>): void => {
     const { currentTarget: target } = event;
     // name doesn't have an index appended like id does, so it's easier to parse
@@ -137,6 +146,12 @@ export default class VoteForm extends React.Component<Props, State> {
     const { inputGroups } = this.state;
 
     onSubmit(inputGroups);
+
+    this.setState(() => {
+      return {
+        inputGroups: this.getEmptyInputGroups()
+      };
+    });
   };
 
   render(): JSX.Element {
